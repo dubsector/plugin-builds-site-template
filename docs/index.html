@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YourPlugin Builds — Download</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --surface2: #1c2128;
+      --border:   #30363d;
+      --text:     #e6edf3;
+      --muted:    #7d8590;
+      --subtle:   #484f58;
+      --accent:   #2f81f7;
+      --accent-bg:#1c2f4a;
+      --success:  #3fb950;
+      --success-bg:#122520;
+      --radius:   8px;
+      --mono:     'JetBrains Mono', monospace;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Nav ── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      padding: 0 0.75rem 0 2rem;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 12px;
+    }
+    .nav-icon {
+      width: 28px; height: 28px;
+      flex-shrink: 0;
+      background: var(--accent-bg);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-icon svg { width: 16px; height: 16px; flex-shrink: 0; fill: var(--accent); }
+    .nav-title { font-weight: 600; font-size: 15px; flex-shrink: 0; }
+    .nav-sep { color: var(--subtle); margin: 0 4px; flex-shrink: 0; }
+    .nav-sub { color: var(--muted); font-size: 14px; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto;
+      flex-shrink: 0;
+      font-size: 11px; font-weight: 500;
+      background: var(--success-bg); color: var(--success);
+      padding: 2px 10px; border-radius: 99px;
+      border: 1px solid #1f4a2a;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 3rem 2rem 2.5rem;
+      text-align: center;
+    }
+    .hero h1 { font-size: 30px; font-weight: 600; margin-bottom: 0.5rem; }
+    .hero p { color: var(--muted); font-size: 15px; max-width: 480px; margin: 0 auto; }
+
+    /* ── Layout ── */
+    .container { max-width: 780px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* ── Download card ── */
+    .download-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.75rem;
+    }
+    .card-version { font-size: 20px; font-weight: 600; }
+    .card-version span { color: var(--muted); font-weight: 400; font-size: 14px; margin-left: 8px; }
+    .badge-latest {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--success-bg); color: var(--success);
+      font-size: 12px; font-weight: 500;
+      padding: 3px 10px; border-radius: 99px;
+      border: 1px solid #1f4a2a;
+    }
+    .badge-latest::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+
+    .card-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .meta-item {
+      padding: 1rem 1.5rem;
+      border-right: 1px solid var(--border);
+    }
+    .meta-item:last-child { border-right: none; }
+    .meta-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+    .meta-value { font-size: 14px; font-weight: 500; }
+    .meta-value.mono { font-family: var(--mono); font-size: 13px; }
+
+    .card-actions { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+
+    .btn-download {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-family: inherit; font-size: 15px; font-weight: 500;
+      border: none; border-radius: var(--radius);
+      padding: 0.75rem 1.5rem;
+      cursor: pointer; width: 100%;
+      transition: opacity 0.15s;
+      text-decoration: none;
+    }
+    .btn-download:hover { opacity: 0.88; text-decoration: none; }
+    .btn-download svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .verify-block { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .verify-header {
+      padding: 0.5rem 1rem;
+      font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .verify-header svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .verify-cmd { padding: 0.75rem 1rem; font-family: var(--mono); font-size: 12.5px; color: var(--text); line-height: 1.7; white-space: pre-wrap; word-break: break-all; }
+
+    /* ── Build history ── */
+    .section-header {
+      font-size: 13px; font-weight: 500; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 0.75rem;
+    }
+    .builds-table { width: 100%; border-collapse: collapse; }
+    .builds-table thead th {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); font-weight: 500;
+      padding: 0.5rem 1rem; text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .builds-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    .builds-table tbody tr:hover { background: var(--surface2); }
+    .builds-table tbody tr:last-child { border-bottom: none; }
+    .builds-table td { padding: 0.75rem 1rem; font-size: 13px; }
+    .builds-table .td-sha { font-family: var(--mono); font-size: 12.5px; }
+    .builds-table .td-dl { text-align: right; }
+    .builds-table .td-dl a {
+      display: inline-flex; align-items: center; gap: 5px;
+      color: var(--accent); font-weight: 500;
+    }
+    .builds-table .td-dl a svg { width: 14px; height: 14px; }
+    .builds-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    /* ── States ── */
+    .loading { text-align: center; padding: 4rem 2rem; color: var(--muted); font-size: 14px; }
+    .error-msg { background: #2d1b1b; border: 1px solid #6e2b2b; border-radius: var(--radius); padding: 1rem 1.25rem; color: #f85149; font-size: 14px; margin-bottom: 1.5rem; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); }
+    footer a:hover { color: var(--text); }
+
+    .star-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      flex-shrink: 0;
+      background: var(--surface2); color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px 10px; font-size: 13px; font-weight: 500;
+      text-decoration: none; transition: color 0.15s, border-color 0.15s;
+    }
+    .star-btn:hover { color: var(--text); border-color: var(--subtle); text-decoration: none; }
+    .star-btn svg { width: 13px; height: 13px; color: #e3b341; }
+    #star-count { color: var(--subtle); font-weight: 400; }
+
+    @media (max-width: 540px) {
+      .card-meta { grid-template-columns: 1fr 1fr; }
+      .meta-item:nth-child(2) { border-right: none; }
+      .meta-item:nth-child(3) { border-top: 1px solid var(--border); grid-column: span 2; }
+    }
+
+    @media (max-width: 480px) {
+      nav { padding: 0 0.625rem; gap: 6px; }
+      .nav-sep { margin: 0; }
+      .nav-badge { padding: 2px 7px; font-size: 10px; }
+      .star-btn { padding: 3px 7px; font-size: 12px; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-icon">
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+    </svg>
+  </div>
+  <span class="nav-title">YourPlugin</span>
+  <span class="nav-sep">/</span>
+  <span class="nav-sub">builds</span>
+  <span class="nav-badge">Automated</span>
+  <a id="star-btn" href="https://github.com/your-username/your-plugin-builds" target="_blank" rel="noopener" class="star-btn" aria-label="Star on GitHub">
+    <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+    Star <span id="star-count"></span>
+  </a>
+</nav>
+
+<div class="hero">
+  <h1>Download YourPlugin</h1>
+  <p>Daily builds from upstream master — smoke tested on Paper and Folia, signed and attested.</p>
+</div>
+
+<div class="container">
+  <div id="app"><div class="loading">Loading latest build…</div></div>
+</div>
+
+<footer>
+  YourPlugin is copyright the <a href="https://github.com/your-org/YourPlugin" target="_blank" rel="noopener">YourPlugin contributors</a> and distributed under the
+  <a href="https://github.com/your-org/YourPlugin/blob/master/LICENSE" target="_blank" rel="noopener">LICENSE-NAME license</a>.
+  Builds by <a href="https://github.com/your-username/your-plugin-builds" target="_blank" rel="noopener">your-username/your-plugin-builds</a>.
+</footer>
+
+<script>
+/*
+ * ── Customize these constants for your project ──
+ * See README.md for the full setup checklist (Pages config, release format,
+ * regex patterns below, and the footer/title/hero text above).
+ */
+const PLUGIN_NAME   = 'YourPlugin';                          // display name used in card titles / jar fallback names
+const REPO          = 'your-username/your-plugin-builds';    // this builds repo, owner/name
+const UPSTREAM_REPO = 'your-org/YourPlugin';                 // the plugin's source repo, owner/name
+const API           = `https://api.github.com/repos/${REPO}/releases?per_page=10`;
+
+function fmtDate(iso) {
+  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+// TODO: match your release title format, e.g. "YourPlugin 1.2.3 (abc1234)".
+// Must capture (1) version and (2) short commit sha. Falls back to the raw
+// release name + '?' if it doesn't match.
+function parseName(name) {
+  const m = name.match(new RegExp(`${PLUGIN_NAME}\\s+([\\d.]+(?:-\\S+)?)\\s+\\(([^)]+)\\)`));
+  if (!m) return { version: name, sha: '?' };
+  return { version: m[1].replace(/-SNAPSHOT$/i, ''), sha: m[2] };
+}
+
+function getJar(assets) {
+  return assets.find(a => a.name.endsWith('.jar') && !a.name.endsWith('.sigstore.json') && !a.name.endsWith('.intoto.jsonl'));
+}
+
+// TODO: adjust to however your release body states the supported MC version range.
+function getMcRange(body) {
+  const m = body && body.match(/Paper\s*\|\s*([\d.]+)\s*[–-]\s*([\d.]+)/);
+  return m ? `${m[1]} – ${m[2]}` : 'See release notes';
+}
+
+function getCommitUrl(body) {
+  const m = body && body.match(new RegExp(`https://github\\.com/${UPSTREAM_REPO}/commit/([a-f0-9]+)`));
+  return m ? m[0] : null;
+}
+
+function shieldIcon() {
+  return `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 1.5L2 4v4c0 3.3 2.5 5.5 6 6.5 3.5-1 6-3.2 6-6.5V4L8 1.5z"/>
+    <path d="M5.5 8l1.5 1.5 3.5-3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+function dlIcon() {
+  return `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 2v8M5 7l3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M2 12h12" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function renderLatest(r) {
+  const { version, sha } = parseName(r.name);
+  const jar = getJar(r.assets);
+  const mcRange = getMcRange(r.body);
+  const jarName = jar ? jar.name : `${PLUGIN_NAME}-${version}+${sha}.jar`;
+  const jarUrl  = jar ? jar.browser_download_url : `https://github.com/${REPO}/releases/tag/${r.tag_name}`;
+  const commitUrl = getCommitUrl(r.body) || `https://github.com/${UPSTREAM_REPO}/commit/${sha}`;
+
+  return `
+    <div class="download-card">
+      <div class="card-header">
+        <span class="card-version">${PLUGIN_NAME} ${version}<span>build ${sha}</span></span>
+        <span class="badge-latest">Latest</span>
+      </div>
+      <div class="card-meta">
+        <div class="meta-item">
+          <div class="meta-label">Commit</div>
+          <div class="meta-value mono"><a href="${commitUrl}" target="_blank" rel="noopener">${sha}</a></div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">MC versions</div>
+          <div class="meta-value">${mcRange}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Built</div>
+          <div class="meta-value">${fmtDate(r.published_at)}</div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <a class="btn-download" href="${jarUrl}" download>
+          ${dlIcon()}
+          Download ${jarName}
+        </a>
+        <div class="verify-block">
+          <div class="verify-header">${shieldIcon()} Verify before installing</div>
+          <div class="verify-cmd">gh attestation verify ${jarName} --repo ${REPO}
+
+cosign verify-blob ${jarName} \\
+  --bundle ${jarName}.sigstore.json</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderHistory(releases) {
+  if (releases.length <= 1) return '';
+  const rows = releases.slice(1).map(r => {
+    const { version, sha } = parseName(r.name);
+    const jar = getJar(r.assets);
+    const url = jar ? jar.browser_download_url : `https://github.com/${REPO}/releases/tag/${r.tag_name}`;
+    return `<tr>
+      <td class="td-sha">${sha}</td>
+      <td>${PLUGIN_NAME} ${version}</td>
+      <td>${fmtDate(r.published_at)}</td>
+      <td class="td-dl"><a href="${url}">${dlIcon()} Download</a></td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <div class="section-header">Previous builds</div>
+    <div class="builds-wrap">
+      <table class="builds-table">
+        <thead><tr>
+          <th>Commit</th><th>Version</th><th>Date</th><th></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+fetch(`https://api.github.com/repos/${REPO}`)
+  .then(r => r.json())
+  .then(d => { if (d.stargazers_count != null) document.getElementById('star-count').textContent = d.stargazers_count; })
+  .catch(() => {});
+
+fetch(API)
+  .then(r => { if (!r.ok) throw new Error(`GitHub API ${r.status}`); return r.json(); })
+  .then(releases => {
+    if (!releases.length) {
+      document.getElementById('app').innerHTML = `<div class="error-msg">No releases found yet — check back soon.</div>`;
+      return;
+    }
+    document.getElementById('app').innerHTML = renderLatest(releases[0]) + renderHistory(releases);
+  })
+  .catch(err => {
+    document.getElementById('app').innerHTML = `<div class="error-msg">Could not load releases: ${err.message}. <a href="https://github.com/${REPO}/releases" target="_blank" rel="noopener">View on GitHub</a></div>`;
+  });
+</script>
+</body>
+</html>
