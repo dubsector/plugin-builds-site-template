@@ -12,6 +12,7 @@ This is the style used by [mcmmo-builds](https://github.com/dubsector/mcmmo-buil
 4. Update the static HTML: `<title>`, nav `Star` link `href`, `.nav-title`, hero `<h1>`/`<p>`, and the `<footer>` copyright/license/repo links.
 5. In your repo settings, enable **Pages → Deploy from a branch → `/docs`** on your default branch.
 6. Make sure your release workflow publishes GitHub Releases with: a `.jar` asset, a `.sigstore.json` bundle, and an `.intoto.jsonl` provenance file (the verify-block commands assume these exist). See mcmmo-builds' or coreprotect-builds' `.github/workflows/build.yml` for a full pipeline example (cosign signing + SLSA attestation + smoke tests).
+7. Add a `**Download page:**` line near the top of your new repo's own README, right after the intro sentence, linking to the live Pages URL — see mcmmo-builds/coreprotect-builds for the exact format.
 
 ## Variants
 
