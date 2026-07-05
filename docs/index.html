@@ -136,6 +136,30 @@
     .btn-download:hover { opacity: 0.88; text-decoration: none; }
     .btn-download svg { width: 18px; height: 18px; flex-shrink: 0; }
 
+    /* OPTIONAL MODULE (see CHANGELOG_ENABLED in the script config block) */
+    .changelog-block { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .changelog-header {
+      padding: 0.5rem 1rem;
+      font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .changelog-list { margin: 0; padding: 0.75rem 1rem 0.75rem 1.75rem; font-size: 13px; line-height: 1.6; }
+    .changelog-list li { margin-bottom: 0.25rem; }
+    .changelog-list li:last-child { margin-bottom: 0; }
+    .changelog-toggle {
+      display: block; width: 100%;
+      background: none; border: none; border-top: 1px solid var(--border);
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      font-family: inherit;
+      font-size: 12.5px; font-weight: 500;
+      color: var(--accent);
+      text-align: left;
+    }
+    .changelog-toggle:hover { text-decoration: underline; }
+    .changelog-toggle[hidden] { display: none; }
+
     .verify-block { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
     .verify-header {
       padding: 0.5rem 1rem;
@@ -282,6 +306,16 @@
 const PLUGIN_NAME   = 'YourPlugin';                          // display name used in card titles / jar fallback names
 const REPO          = 'your-username/your-plugin-builds';    // this builds repo, owner/name
 const UPSTREAM_REPO = 'your-org/YourPlugin';                 // the plugin's source repo, owner/name
+
+// OPTIONAL MODULE: set true only if your build workflow adds a
+// "**Changelog:**" section to the release body (a diff of the upstream
+// changelog file between this build's commit and the previous one). Most
+// plugins don't maintain a single changelog file worth diffing — leave
+// this false and the changelog UI stays inert (getChangelog() always
+// returns an empty array, nothing renders). See mcmmo-builds for the full
+// reference implementation, including the build.yml step that generates
+// the section: https://github.com/dubsector/mcmmo-builds
+const CHANGELOG_ENABLED = false;
 const API           = `https://api.github.com/repos/${REPO}/releases?per_page=10`;
 
 function fmtDate(iso) {
@@ -312,6 +346,45 @@ function getCommitUrl(body) {
   return m ? m[0] : null;
 }
 
+// OPTIONAL MODULE (see CHANGELOG_ENABLED above). Parses the
+// "**Changelog:**" section out of the release body. Returns [] — and the
+// UI stays hidden — if the section isn't present, so this is safe to leave
+// in even when disabled.
+function getChangelog(body) {
+  const m = body && body.match(/\*\*Changelog:\*\*\n([\s\S]*?)\n\n\*\*Verify/);
+  if (!m) return [];
+  return m[1].split('\n').map(l => l.replace(/^-\s*/, '').trim()).filter(Boolean);
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// OPTIONAL MODULE (see CHANGELOG_ENABLED above). Renders the first
+// CHANGELOG_VISIBLE items directly, with the rest as individually hidden
+// <li> elements toggled by the Show/Hide buttons below — one continuous
+// list, not a second nested list, so expanding doesn't leave a visible
+// seam. The click handler that wires up the toggle lives near the bottom
+// of this script, delegated on #app.
+const CHANGELOG_VISIBLE = 4;
+
+function renderChangelog(items) {
+  const visible = items.slice(0, CHANGELOG_VISIBLE);
+  const rest = items.slice(CHANGELOG_VISIBLE);
+
+  return `
+    <div class="changelog-block">
+      <div class="changelog-header">Changelog</div>
+      <ul class="changelog-list">
+        ${visible.map(i => `<li>${escapeHtml(i)}</li>`).join('')}
+        ${rest.map(i => `<li class="changelog-extra" hidden>${escapeHtml(i)}</li>`).join('')}
+      </ul>
+      ${rest.length ? `
+      <button type="button" class="changelog-toggle changelog-show">Show ${rest.length} more change${rest.length > 1 ? 's' : ''}</button>
+      <button type="button" class="changelog-toggle changelog-hide" hidden>Hide</button>` : ''}
+    </div>`;
+}
+
 function shieldIcon() {
   return `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
     <path d="M8 1.5L2 4v4c0 3.3 2.5 5.5 6 6.5 3.5-1 6-3.2 6-6.5V4L8 1.5z"/>
@@ -330,6 +403,7 @@ function renderLatest(r) {
   const { version, sha } = parseName(r.name);
   const jar = getJar(r.assets);
   const mcRange = getMcRange(r.body);
+  const changelog = CHANGELOG_ENABLED ? getChangelog(r.body) : [];
   const jarName = jar ? jar.name : `${PLUGIN_NAME}-${version}+${sha}.jar`;
   const jarUrl  = jar ? jar.browser_download_url : `https://github.com/${REPO}/releases/tag/${r.tag_name}`;
   const commitUrl = getCommitUrl(r.body) || `https://github.com/${UPSTREAM_REPO}/commit/${sha}`;
@@ -359,6 +433,7 @@ function renderLatest(r) {
           ${dlIcon()}
           Download ${jarName}
         </a>
+        ${changelog.length ? renderChangelog(changelog) : ''}
         <div class="verify-block">
           <div class="verify-header">${shieldIcon()} Verify before installing</div>
           <div class="verify-cmd">gh attestation verify ${jarName} --repo ${REPO}
@@ -398,6 +473,18 @@ function renderHistory(releases) {
       </table>
     </div>`;
 }
+
+// OPTIONAL MODULE (see CHANGELOG_ENABLED above). Delegated so it keeps
+// working after #app's content is replaced by the fetch below.
+document.getElementById('app').addEventListener('click', e => {
+  const btn = e.target.closest('.changelog-toggle');
+  if (!btn) return;
+  const block = btn.closest('.changelog-block');
+  const expand = btn.classList.contains('changelog-show');
+  block.querySelectorAll('.changelog-extra').forEach(li => { li.hidden = !expand; });
+  block.querySelector('.changelog-show').hidden = expand;
+  block.querySelector('.changelog-hide').hidden = !expand;
+});
 
 fetch(`https://api.github.com/repos/${REPO}`)
   .then(r => r.json())
