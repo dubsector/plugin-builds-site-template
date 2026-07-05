@@ -23,6 +23,7 @@ This is the style used by [mcmmo-builds](https://github.com/dubsector/mcmmo-buil
 
 - `:root` CSS custom properties — color tokens, radius, fonts. Don't change these; they're what keeps every builds site visually consistent.
 - `.download-card` / `.meta-item` / `.verify-block` — the latest-release card.
-- `.builds-wrap` / `.builds-table` — the history table for older releases.
+- `.builds-wrap` / `.builds-table` — the history table for older releases. Columns are `Commit | Version | MC Versions | Date | Download`, commit always linked to the actual commit URL. Below `max-width: 640px` it collapses from a table into stacked label/value rows per build (via the `data-label` attributes on each `<td>`) so columns don't get clipped on phones — keep the column order and `data-label` values in sync if you add/remove columns.
 - `.loading` / `.error-msg` — fetch states.
 - Nav has a `max-width: 480px` media query so it doesn't overflow on narrow phones — keep it if you add/remove nav items, re-check it still fits.
+- Releases fetched from the API aren't guaranteed to be ordered by `published_at` — always re-sort descending by `published_at` right after fetching, before treating `releases[0]` as "latest".
